@@ -4,7 +4,6 @@ namespace libs;
 
 use Closure;
 use libs\Db as LibsDb;
-use libs\Model;
 
 class Container
 {
@@ -33,7 +32,3 @@ class Container
 		return call_user_func_array($this->instances[$className], $params);
 	}
 }
-$container = new Container();
-$container->bind('Model', function () {
-	return new Model();
-});
