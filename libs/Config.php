@@ -18,4 +18,19 @@ class Config
 		}
 		return $config;
 	}
+
+	/**
+	 * 获取配置参数
+	 * @param string $key
+	 * @return array|string
+	 */
+	public function config($key=''){
+		$keyArr=explode('.',$key);
+		global $_CONFIG;
+		$config=$_CONFIG;
+		foreach($keyArr as $v){
+			$config=$config[$v]??'';
+		}
+		return $config;
+	}
 }
