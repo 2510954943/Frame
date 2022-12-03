@@ -1,0 +1,11 @@
+<?php
+return[
+	'Mysql'=>[
+		'type'=>'mysql',
+		'host'=>'localhost',
+		'dbname'=>'tp6',
+		'username'=>'root',
+		'pwd'=>'root',
+		'port'=>'3306'
+	]
+];

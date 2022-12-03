@@ -1,0 +1,13 @@
+{
+	"name": "my/phpframe",
+	"description": "this is the php frame i practiced",
+	"require": {
+		"php":">=7.1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"app\\":"app/",
+			"libs\\":"libs/"
+		}
+	}
+}
