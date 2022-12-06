@@ -24,7 +24,7 @@ class Config
 	 * @param string $key
 	 * @return array|string
 	 */
-	public function config($key=''){
+	public static function config($key=''){
 		$keyArr=explode('.',$key);
 		global $_CONFIG;
 		$config=$_CONFIG;

@@ -2,9 +2,9 @@
 
 namespace libs;
 
-use Exception;
-use JetBrains\PhpStorm\ExpectedValues;
 use PDO;
+use PDOException;
+
 /**
  * 数据库操作类（链式）
  */
@@ -12,9 +12,10 @@ class Query
 {
 	private static $db;
 	private $table;
-	private $field;
-	private $where;
+	private $field = '*';
+	private $whereValue = [];
 	private $limit;
+	protected $options;
 
 	private function __construct()
 	{
@@ -23,8 +24,12 @@ class Query
 	{
 	}
 
-	public static function connect($dsn, $user, $pwd)
+	public static function connect()
 	{
+		$config = Config::config('database.Mysql');
+		$dsn = "{$config['type']}:host={$config['host']};dbname={$config['dbname']}";
+		$user = $config['username'];
+		$pwd = $config['pwd'];
 		if (empty(static::$db)) {
 			static::$db = new PDO($dsn, $user, $pwd);
 		}
@@ -42,9 +47,20 @@ class Query
 		$this->field($field);
 		return $this;
 	}
-	public function where($fieldName, $value)
+
+	/**
+	 * @param string $fieldName		查询字段
+	 * @param string $op			查询表达式
+	 * @param string $value			查询条件
+	 * @return void
+	 */
+	public function where($fieldName, $op = '=', $value)
 	{
-		$this->where = ["{$fieldName}=",$value];
+		if (!empty($this->options)) {
+			$this->options .= ' AND ';
+		}
+		$this->options .= "{$fieldName} {$op} ? ";
+		$this->whereValue[] = $value;
 		return $this;
 	}
 	public function limit($limit)
@@ -53,13 +69,18 @@ class Query
 		return $this;
 	}
 
+	protected function getStmt()
+	{
+		$sql = "SELECT {$this->field} FROM {$this->table} WHERE {$this->options}";
+		$stmt = static::$db->prepare($sql);
+		return $stmt;
+	}
+
 	public function select()
 	{
-		$sql = "SELECT * FROM {$this->table} WHERE  {$this->where[0]} ?";
-		$stmt = static::$db->prepare($sql);
-		$stmt->bindValue(1, $this->where[1]);
-		$stmt->execute();
-		// $stmt=static::$db->query($sql);
+		$stmt=$this->getStmt();
+		$res = $stmt->execute($this->whereValue);
+
 		$result = $stmt->fetchAll();
 		return $result;
 	}
