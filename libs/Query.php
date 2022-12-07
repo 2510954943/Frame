@@ -14,6 +14,7 @@ class Query
 	private $table;
 	private $field = '*';
 	private $whereValue = [];
+	private $order;
 	private $limit;
 	protected $options;
 
@@ -52,7 +53,7 @@ class Query
 	 * @param string $fieldName		查询字段
 	 * @param string $op			查询表达式
 	 * @param string $value			查询条件
-	 * @return void
+	 * @return Query
 	 */
 	public function where($fieldName, $op = '=', $value)
 	{
@@ -63,15 +64,19 @@ class Query
 		$this->whereValue[] = $value;
 		return $this;
 	}
+	public function order($field,$order='asc'){
+		$this->order="{$field} {$order}";
+		return $this;
+	}
 	public function limit($limit)
 	{
-		$this->limit($limit);
+		$this->limit=($limit);
 		return $this;
 	}
 
 	protected function getStmt()
 	{
-		$sql = "SELECT {$this->field} FROM {$this->table} WHERE {$this->options}";
+		$sql = "SELECT {$this->field} FROM {$this->table} WHERE {$this->options} ORDER BY  {$this->order} LIMIT {$this->limit} ";
 		$stmt = static::$db->prepare($sql);
 		return $stmt;
 	}
@@ -80,7 +85,7 @@ class Query
 	{
 		$stmt=$this->getStmt();
 		$res = $stmt->execute($this->whereValue);
-
+		// var_dump($stmt->debugDumpParams()) ;exit;
 		$result = $stmt->fetchAll();
 		return $result;
 	}
