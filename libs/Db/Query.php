@@ -1,41 +1,36 @@
 <?php
 
-namespace libs;
+namespace libs\Db;
 
 use PDO;
-use PDOException;
-
 /**
- * 数据库操作类（链式）
+ * 数据库查询（链式）
  */
-class Query
+class Query extends Db
 {
-	private static $db;
 	private $table;
+	
 	private $field = '*';
+
+	/**
+	 * 查询条件值
+	 * @var array
+	 */
 	private $whereValue = [];
+
 	private $order;
+
+	/**
+	 * 查询条数
+	 * @var string
+	 */
 	private $limit;
+
+	/**
+	 * 查询条件字段
+	 * @var string
+	 */
 	protected $options;
-
-	private function __construct()
-	{
-	}
-	private function __clone()
-	{
-	}
-
-	public static function connect()
-	{
-		$config = Config::config('database.Mysql');
-		$dsn = "{$config['type']}:host={$config['host']};dbname={$config['dbname']}";
-		$user = $config['username'];
-		$pwd = $config['pwd'];
-		if (empty(static::$db)) {
-			static::$db = new PDO($dsn, $user, $pwd);
-		}
-		return new static;
-	}
 
 	public function table($tableName)
 	{
@@ -77,15 +72,15 @@ class Query
 	protected function getStmt()
 	{
 		$sql = "SELECT {$this->field} FROM {$this->table} WHERE {$this->options} ORDER BY  {$this->order} LIMIT {$this->limit} ";
-		$stmt = static::$db->prepare($sql);
+		$stmt = $this->getDb()->prepare($sql);
 		return $stmt;
 	}
 
 	public function select()
 	{
+		parent::connect();
 		$stmt=$this->getStmt();
 		$res = $stmt->execute($this->whereValue);
-		// var_dump($stmt->debugDumpParams()) ;exit;
 		$result = $stmt->fetchAll();
 		return $result;
 	}
