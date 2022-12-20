@@ -23,6 +23,7 @@ class Container
 	}
 
 	/**
+	 * 创建实例
 	 * @param [type] $className
 	 * @param array $params
 	 * @return obj
