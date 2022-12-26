@@ -8,6 +8,6 @@ class test extends Command{
 
 	public function handle()
 	{
-		echo $this->args[0];
+		echo $this->args[0] ?? 'hello word';
 	}
 }
