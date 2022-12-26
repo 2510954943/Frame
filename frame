@@ -1,0 +1,8 @@
+<?php
+ini_set('display_errors', true);
+
+use libs\console\console;
+
+require_once(__DIR__."./vendor/autoload.php");
+
+(new console())->run();
